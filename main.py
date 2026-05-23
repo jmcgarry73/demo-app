@@ -1,8 +1,23 @@
+import os
+import sys
 import tkinter as tk
 from tkinter import messagebox
 
 APP_NAME = "Demo App"
 APP_VERSION = "1.0.0"
+
+
+def resource_path(relative_path):
+    """
+    Get absolute path to resource,
+    works for dev and PyInstaller.
+    """
+    try:
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 
 def check_updates():
@@ -23,6 +38,8 @@ root = tk.Tk()
 root.title(APP_NAME)
 root.geometry("500x300")
 root.resizable(False, False)
+
+root.iconbitmap(resource_path("assets/icon.ico"))
 
 title_label = tk.Label(
     root,
