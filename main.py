@@ -3,8 +3,7 @@ import sys
 import tkinter as tk
 from tkinter import messagebox
 
-APP_NAME = "Demo App"
-APP_VERSION = "1.0.0"
+from version import APP_NAME, APP_VERSION
 
 
 def resource_path(relative_path):
