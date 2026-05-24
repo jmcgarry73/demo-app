@@ -1,6 +1,10 @@
 import os
-import requests
 import sys
+import tempfile
+import webbrowser
+from pathlib import Path
+
+import requests
 import tkinter as tk
 from tkinter import messagebox
 
@@ -33,13 +37,40 @@ def check_updates():
         response.raise_for_status()
 
         latest_release = response.json()
+
         latest_version = latest_release["tag_name"].lstrip("v")
 
         if latest_version != APP_VERSION:
-            messagebox.showinfo(
+
+            assets = latest_release.get("assets", [])
+
+            installer_url = None
+
+            for asset in assets:
+                name = asset["name"]
+
+                if name.endswith(".exe"):
+                    installer_url = asset["browser_download_url"]
+                    break
+
+            if installer_url is None:
+                messagebox.showerror(
+                    "Update Error",
+                    "No installer found in release."
+                )
+                return
+
+            result = messagebox.askyesno(
                 "Update Available",
-                f"Version {latest_version} is available."
+                (
+                    f"Version {latest_version} is available.\n\n"
+                    f"Would you like to download it?"
+                )
             )
+
+            if result:
+                webbrowser.open(installer_url)
+
         else:
             messagebox.showinfo(
                 "Updates",
@@ -51,7 +82,6 @@ def check_updates():
             "Update Error",
             str(e)
         )
-
 
 def show_about():
     messagebox.showinfo(
