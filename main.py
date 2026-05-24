@@ -1,10 +1,18 @@
 import os
+import requests
 import sys
 import tkinter as tk
 from tkinter import messagebox
 
 from version import APP_NAME, APP_VERSION
 
+GITHUB_USER = "jmcgarry73"
+GITHUB_REPO = "demo-app"
+
+LATEST_RELEASE_URL = (
+    f"https://api.github.com/repos/"
+    f"{GITHUB_USER}/{GITHUB_REPO}/releases/latest"
+)
 
 def resource_path(relative_path):
     """
@@ -20,10 +28,29 @@ def resource_path(relative_path):
 
 
 def check_updates():
-    messagebox.showinfo(
-        "Updates",
-        "You are running the latest version."
-    )
+    try:
+        response = requests.get(LATEST_RELEASE_URL, timeout=5)
+        response.raise_for_status()
+
+        latest_release = response.json()
+        latest_version = latest_release["tag_name"].lstrip("v")
+
+        if latest_version != APP_VERSION:
+            messagebox.showinfo(
+                "Update Available",
+                f"Version {latest_version} is available."
+            )
+        else:
+            messagebox.showinfo(
+                "Updates",
+                "You are running the latest version."
+            )
+
+    except Exception as e:
+        messagebox.showerror(
+            "Update Error",
+            str(e)
+        )
 
 
 def show_about():
